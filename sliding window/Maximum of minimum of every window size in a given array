@@ -1,0 +1,50 @@
+#include <iostream>
+#include <vector>
+#include <deque>
+#include <climits>
+using namespace std;
+
+vector<int> maxOfMinDeque(vector<int>& arr) {
+    int n = arr.size();
+    vector<int> res(n);
+
+    // iterate over all window sizes
+    for (int k = 1; k <= n; k++) {
+        deque<int> dq;
+        int maxOfMin = INT_MIN;
+
+        // process first k elements
+        for (int i = 0; i < k; i++) {
+            while (!dq.empty() && arr[i] <= arr[dq.back()])
+                dq.pop_back();
+            dq.push_back(i);
+        }
+
+        // slide the window
+        for (int i = k; i < n; i++) {
+            maxOfMin = max(maxOfMin, arr[dq.front()]);
+
+            while (!dq.empty() && dq.front() <= i - k)
+                dq.pop_front();
+            while (!dq.empty() && arr[i] <= arr[dq.back()])
+                dq.pop_back();
+
+            dq.push_back(i);
+        }
+
+        maxOfMin = max(maxOfMin, arr[dq.front()]);
+        res[k - 1] = maxOfMin;
+    }
+
+    return res;
+}
+
+int main() {
+    vector<int> arr = {10, 20, 30, 50, 10, 70, 30};
+    vector<int> res = maxOfMinDeque(arr);
+
+    for (int val : res) cout << val << " ";
+    cout << endl;
+
+    return 0;
+}
