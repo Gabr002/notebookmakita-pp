@@ -1,3 +1,15 @@
+// Problema (contexto):
+// Dado um array de inteiros `arr` e um inteiro `k`, queremos calcular
+// quantos elementos distintos existem em cada subarray (janela) de tamanho `k`.
+// Exemplo: arr = [1, 2, 1, 3, 4, 2, 3], k = 4
+// Subarrays de tamanho 4 → [1,2,1,3], [2,1,3,4], [1,3,4,2], [3,4,2,3]
+// Quantidade de distintos → [3, 4, 4, 3].
+
+// Solução (usando Hash Map + Sliding Window):
+// - Usamos um `unordered_map` para guardar a frequência dos elementos na janela.
+// - Para cada nova posição, adicionamos o próximo elemento e removemos o mais antigo.
+// - O número de distintos é dado pelo tamanho do mapa (chaves com freq > 0).
+
 #include <iostream>
 #include <vector>
 #include <unordered_map>
@@ -6,24 +18,28 @@ using namespace std;
 vector<int> countDistinct(vector<int> &arr, int k) {
     int n = arr.size();  
     vector<int> res;
-    unordered_map<int, int> freq;
+    unordered_map<int, int> freq;  // guarda frequência dos elementos
   
-    // Store the frequency of elements of first window
+    // Frequência da primeira janela
     for(int i = 0; i < k; i++)
-        freq[arr[i]] += 1;
-  
-    // Store the count of distinct element of first window
+        freq[arr[i]]++;
+
+    // Número de distintos da primeira janela
     res.push_back(freq.size());
   
+    // Desliza a janela
     for(int i = k; i < n; i++) {
-    	freq[arr[i]] += 1;
-        freq[arr[i - k]] -= 1;
-      
-        // If the frequency of arr[i - k] becomes 0 remove 
-        // it from hash map
+        // Adiciona o novo elemento
+        freq[arr[i]]++;
+
+        // Remove o elemento que saiu da janela
+        freq[arr[i - k]]--;
+
+        // Se a frequência dele zerar, apaga do mapa
         if(freq[arr[i - k]] == 0)
             freq.erase(arr[i - k]);
-      
+
+        // Quantidade de distintos na janela atual
         res.push_back(freq.size());
     }
       
